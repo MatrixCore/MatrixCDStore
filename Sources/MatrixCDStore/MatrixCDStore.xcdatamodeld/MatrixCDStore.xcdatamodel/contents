@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21223.11" systemVersion="22A5266r" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Account" representedClassName="MatrixCDStore.Account" syncable="YES" codeGenerationType="category">
+        <attribute name="deviceID" attributeType="String"/>
+        <attribute name="displayName" optional="YES" attributeType="String"/>
+        <attribute name="homeserver_cd" attributeType="String"/>
+        <attribute name="mxid_cd" attributeType="String"/>
+        <attribute name="name_cd" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="mxid_cd"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="Event" representedClassName="MatrixCDStore.Event" syncable="YES" codeGenerationType="class">
+        <attribute name="content" optional="YES" attributeType="Binary"/>
+        <attribute name="edited" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="event_id" attributeType="String"/>
+        <attribute name="printable" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="received" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="room_id" attributeType="String"/>
+        <attribute name="state" optional="YES" attributeType="Integer 16" usesScalarValueType="YES"/>
+        <attribute name="state_key" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="type" attributeType="String"/>
+        <relationship name="edited_by" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="edits" inverseEntity="Event"/>
+        <relationship name="edits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="edited_by" inverseEntity="Event"/>
+        <relationship name="room" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Room" inverseName="events" inverseEntity="Room"/>
+        <relationship name="sender" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Handle" inverseName="events" inverseEntity="Handle"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="room_id"/>
+            </uniquenessConstraint>
+            <uniquenessConstraint>
+                <constraint value="event_id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="Handle" representedClassName="MatrixCDStore.Handle" syncable="YES" codeGenerationType="class">
+        <attribute name="avatar_url" optional="YES" attributeType="String"/>
+        <attribute name="display_name" optional="YES" attributeType="String"/>
+        <attribute name="mxid" attributeType="String"/>
+        <relationship name="direct_room" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Room" inverseName="direct" inverseEntity="Room"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Event" inverseName="sender" inverseEntity="Event"/>
+        <relationship name="rooms" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Room" inverseName="joined_users" inverseEntity="Room"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="mxid"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="Room" representedClassName="MatrixCDStore.Room" syncable="YES" codeGenerationType="class">
+        <attribute name="displayname" optional="YES" attributeType="String"/>
+        <attribute name="encryption" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="prev_batch" optional="YES" attributeType="String"/>
+        <attribute name="room_id" attributeType="String"/>
+        <attribute name="topic" optional="YES" attributeType="String"/>
+        <attribute name="total_joined_users" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="version" optional="YES" attributeType="String"/>
+        <relationship name="direct" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Handle" inverseName="direct_room" inverseEntity="Handle"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="room" inverseEntity="Event"/>
+        <relationship name="joined_users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Handle" inverseName="rooms" inverseEntity="Handle"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="room_id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <fetchRequest name="PrintableEvents" entity="Event" predicateString="printable == 1" returnObjectsAsFaults="YES"/>
+    <elements>
+        <element name="Account" positionX="-63" positionY="-18" width="128" height="104"/>
+        <element name="Event" positionX="-36" positionY="9" width="128" height="239"/>
+        <element name="Handle" positionX="-54" positionY="0" width="128" height="119"/>
+        <element name="Room" positionX="-18" positionY="27" width="128" height="179"/>
+    </elements>
+</model>
